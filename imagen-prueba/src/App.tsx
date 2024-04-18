@@ -1,30 +1,77 @@
 import './App.css'
-import pelicula from './mocks/Peliculas.json'
+import {useGetImage} from './hooks/getMovies'
+import debounce from "just-debounce-it";
+
+import {Movies} from './Components/Movies'
+import  { useState,FormEvent,useRef, ChangeEvent } from 'react'
+
+
+
+
+
+
+
+
+
 function App() {
- console.log(pelicula)
-const peliculas = pelicula.Search
-  return (
-    <div className='page'>
 
-    <header>
-      <h1>Hola</h1>
-    </header>
+const [Text, setText] = useState<string >('')
+const [filyear,setFilyeard] = useState<boolean>(false)
+const inputRef = useRef<HTMLInputElement | null>(null) // Inicializar el useRef con el elemento
 
-     <main >
-      <div className='movies'>
-      {peliculas.map(movie => (
-        <div className='movie' key={movie.imdbID}>
-          <h3>{movie.Title}</h3>
-          <p>{movie.Type}</p>
-          <img src={movie.Poster} alt="" />
-        </div>
-     
-      ))}
-       </div>
-     </main>
-        
-     </div>
-  )
+const {movies} = useGetImage(Text,filyear)
+
+
+
+
+
+
+const handlenTextController=(e:FormEvent<HTMLFormElement >): void =>  {
+  e.preventDefault()
+  const input = inputRef.current?.value // puede no tener nada
+
+  if(input === undefined) return // Siempre procurpar que no llega el estado no deseado
+  setText(input)
 }
+
+const handlentText = (e: ChangeEvent<HTMLInputElement>): void => {
+  const newText = e.target.value
+  setText(newText)
+  
+}
+
+const handlentchecked = (e: ChangeEvent<HTMLInputElement>): void => {
+  const value = e.target.checked
+  setFilyeard(value)
+}
+
+
+return (
+  <div className='page' >
+<h1>Buscar Peliculas</h1>
+
+
+  <header>
+    <form onSubmit={(e)=> handlenTextController(e)}>
+      <input ref={inputRef} name='input' type="text" onChange={(e)=> handlentText(e) } value={Text} />
+      <input type="checkbox" onChange={(e)=> handlentchecked(e)}/>
+      <button>Buscar</button>
+    </form>
+  </header>
+
+
+
+   <main >
+    <div className='movies'>
+    {movies=== undefined ? <h2>Sin Movies</h2>:<Movies movies={movies}/>} 
+     </div>
+   </main>
+      
+   </div>
+)
+}
+
+
+
 
 export default App

@@ -22,8 +22,8 @@ Primera Iteracion:
 
 - ✅ Evitar que se haga la misma busqueda dos veces seguidas.
 
-- Ordenar Peliculas por año
+- ✅ Ordenar Peliculas por año
 
-- Haz que la busqueda se haga automaticamente al escribir.
+- ✅ Haz que la busqueda se haga automaticamente al escribir.
 
-- Evita que se haga la busqueda continuamente al escribir (debounce)
+- ✅ Evita que se haga la busqueda continuamente al escribir (debounce)
