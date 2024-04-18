@@ -3,25 +3,22 @@ import {useGetImage} from './hooks/getMovies'
 import debounce from "just-debounce-it";
 
 import {Movies} from './Components/Movies'
-import  { useState,FormEvent,useRef, ChangeEvent } from 'react'
-
-
-
-
-
-
-
+import  { useState,FormEvent,useRef, ChangeEvent, useCallback } from 'react'
 
 
 function App() {
 
 const [Text, setText] = useState<string >('')
 const [filyear,setFilyeard] = useState<boolean>(false)
-const inputRef = useRef<HTMLInputElement | null>(null) // Inicializar el useRef con el elemento
+const inputRef = useRef<HTMLInputElement | null>(null) // Inicializar el useRef con el elemento o null
 
-const {movies} = useGetImage(Text,filyear)
+const {movies,callApi} = useGetImage(filyear)
 
 
+const getDebounceMovies=useCallback( 
+  debounce((Text:string)=> {callApi(Text)},500)
+
+,[])
 
 
 
@@ -37,12 +34,14 @@ const handlenTextController=(e:FormEvent<HTMLFormElement >): void =>  {
 const handlentText = (e: ChangeEvent<HTMLInputElement>): void => {
   const newText = e.target.value
   setText(newText)
+  getDebounceMovies(newText)
   
 }
 
 const handlentchecked = (e: ChangeEvent<HTMLInputElement>): void => {
   const value = e.target.checked
   setFilyeard(value)
+  
 }
 
 
