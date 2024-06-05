@@ -1,3 +1,19 @@
+export const Filters = {
+    SortNone : 'none',
+    SortName: 'name',
+    SortLast: 'last',
+} as const
+
+
+export const FiltersCountry = {
+    SortCountry: 'country',
+    SortNone: 'none',
+} as const
+
+
+export type Filter = typeof Filters[keyof typeof Filters]
+export type FilterCountry = typeof FiltersCountry[keyof typeof FiltersCountry]
+
 export interface API {
     results: Result[];
     info: Info;
