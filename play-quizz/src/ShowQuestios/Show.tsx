@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react'
 import { type TypeQuestions } from '../types/TypesQuestions'
 
 interface typesQuestions {
@@ -10,38 +10,62 @@ export const ShowQuestions = ({ Questions }: typesQuestions) => {
     const [count, setCount] = useState(1)
     const [totalPoints, setTotal] = useState(1000)
     const [point, setpoin] = useState(totalPoints)
-    const [Value1, setValue1] = useState('0')
-    const [Value2, setValue2] = useState('0')
-    const [Value3, setValue3] = useState('0')
-    const [Value4, setValue4] = useState('0')
+    const [Value, setValue] = useState({
+        Value1: '0',
+        Value2: '0',
+        Value3: '0',
+        Value4: '0',
+    })
+    const [showResult, setShowResult] = useState(false)
+    const [alert, setAlert] = useState(false)
 
 
+    function handleValues(e: ChangeEvent<HTMLInputElement>) {
+        const { name, value } = e.target
+        const cleanedValue = value.replace(/^0+(?=\d)/, '')
+        const IntNumber = Number.isInteger(+value)
+        if (!IntNumber) return
+        setValue(prev => ({
+            ...prev,
+            [name]: cleanedValue
+        }))
+    }
 
-    console.log(point)
+    function handlendSubmit(e: FormEvent<HTMLFormElement>) {
+        e.preventDefault()
+
+        if (point > 0) return setAlert(true)
+        setAlert(false)
+        setShowResult(true)
+        setTotal(point)
+
+    }
+
 
 
     function confirm() {
-        setTotal(point)
-        setValue1('0')
-        setValue2('0')
-        setValue3('0')
-        setValue4('0')
+
+        setValue({
+            Value1: '0',
+            Value2: '0',
+            Value3: '0',
+            Value4: '0',
+        })
+
         if (count >= 12) return
 
         setQuestion(Questions[count])
         setCount(count + 1)
+        setShowResult(false)
     }
 
 
     useEffect(() => {
         let CountPoints = totalPoints
-        CountPoints = CountPoints - +Value1 - +Value2 - +Value3 - +Value4
+        CountPoints = CountPoints - +Value.Value1 - +Value.Value2 - +Value.Value3 - +Value.Value4
         setpoin(CountPoints)
 
-
-
-
-    }, [Value1, Value2, Value3, Value4, point])
+    }, [Value, point])
 
     return (
         <>
@@ -51,13 +75,16 @@ export const ShowQuestions = ({ Questions }: typesQuestions) => {
                     <p className=' text-3xl'>{question.id}.</p>
                     <p className=' text-xl'>{question.pregunta}</p>
                 </div>
-                <div className=' flex flex-col gap-3'>
-                    <input type="number" required max={point} onChange={(e) => setValue1(e.target.value)} value={Value1} />
-                    <input type="number" required max={point} onChange={(e) => setValue2(e.target.value)} value={Value2} />
-                    <input type="number" required max={point} onChange={(e) => setValue3(e.target.value)} value={Value3} />
-                    <input type="number" required max={point} onChange={(e) => setValue4(e.target.value)} value={Value4} />
-                    <button type="submit" >Responder</button>
-                </div>
+                <form onSubmit={handlendSubmit}>
+                    <div className=' flex flex-col gap-3 justify-center items-center'>
+                        <input name='Value1' type="number" required min={0} onChange={handleValues} disabled={showResult} value={Value.Value1} />
+                        <input name='Value2' type="number" required min={0} onChange={handleValues} disabled={showResult} value={Value.Value2} />
+                        <input name='Value3' type="number" required min={0} onChange={handleValues} disabled={showResult} value={Value.Value3} />
+                        <input name='Value4' type="number" required min={0} onChange={handleValues} disabled={showResult} value={Value.Value4} />
+                        {!showResult ? <button type="submit" >Responder</button> : ''}
+
+                    </div>
+                </form>
 
 
                 <div>
@@ -65,7 +92,8 @@ export const ShowQuestions = ({ Questions }: typesQuestions) => {
                 </div>
             </div>
             <div>
-                <button onClick={() => confirm()}>Confirmar</button>
+                {showResult ? totalPoints > 0 ? <button onClick={() => confirm()}>Siguiente</button> : <p className=' bg-red-400 text-white font-bold'>Juego Finalizado</p> : ''}
+                {alert ? <p className=' bg-red-400 text-white font-bold'>Debe de Gastar Todos sus puntos</p> : ''}
             </div>
 
 
