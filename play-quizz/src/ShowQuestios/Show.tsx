@@ -7,7 +7,7 @@ interface typesQuestions {
 
 export const ShowQuestions = ({ Questions }: typesQuestions) => {
     const [question, setQuestion] = useState<TypeQuestions>(Questions[0])
-    const [count, setCount] = useState(1)
+    const [count, setCount] = useState(0)
     const [totalPoints, setTotal] = useState(1000)
     const [point, setpoin] = useState(totalPoints)
     const [Value, setValue] = useState({
@@ -35,9 +35,24 @@ export const ShowQuestions = ({ Questions }: typesQuestions) => {
         e.preventDefault()
 
         if (point > 0) return setAlert(true)
+
+        const FindCorrect = Questions[count].correcta
+        if (FindCorrect === 1) {
+            setTotal(+Value.Value1)
+        }
+        if (FindCorrect === 2) {
+            setTotal(+Value.Value2)
+        }
+        if (FindCorrect === 3) {
+            setTotal(+Value.Value3)
+        }
+        if (FindCorrect === 4) {
+            setTotal(+Value.Value4)
+        }
+
         setAlert(false)
         setShowResult(true)
-        setTotal(point)
+
 
     }
 
@@ -52,7 +67,7 @@ export const ShowQuestions = ({ Questions }: typesQuestions) => {
             Value4: '0',
         })
 
-        if (count >= 12) return
+        if (count >= 11) return
 
         setQuestion(Questions[count])
         setCount(count + 1)
@@ -69,7 +84,7 @@ export const ShowQuestions = ({ Questions }: typesQuestions) => {
 
     return (
         <>
-            <h1>Puntos Ahora {point}</h1>
+            <h1>Puntos Ahora {showResult ? totalPoints : point}</h1>
             <div className=' flex gap-2 '>
                 <div>
                     <p className=' text-3xl'>{question.id}.</p>

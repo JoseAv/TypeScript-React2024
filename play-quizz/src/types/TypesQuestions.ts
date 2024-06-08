@@ -3,7 +3,7 @@ export interface TypeQuestions {
     pregunta: string,
     respuestas: string[],
     contestacion: string[],
-    correcta: answer,
+    correcta: number,
     eleccion: answer | 0
 }
 
