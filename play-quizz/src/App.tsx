@@ -1,37 +1,23 @@
 import './App.css'
 import { useQuestions } from './Store/Quizz'
 import { ShowQuestions } from './ShowQuestios/Show'
-import { type TypeQuestions } from './types/TypesQuestions'
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 
 function App() {
-  const Questions = useQuestions((state) => state.Questions)
+  const FetchQuestions = useQuestions((state) => state.FetchQuestions)
   const RequestQuestions = useQuestions((state) => state.RequestQuestions)
-  const [raffle, setRaffle] = useState<TypeQuestions[] | []>([])
+  const randomQuestions = useQuestions((state) => state.randomQuestions)
+  const Questions = useQuestions((state) => state.Questions)
 
 
-
-
-  const randomQuestions = () => {
-    if (Questions.length === 0 || raffle.length >= 12) return;
-
-    const newNumber = Math.floor(Math.random() * Questions.length); // daba error porque habian 45 preguntas pero hay 
-    const ValidateNumber = raffle.find(quest => quest.id === newNumber); // 0 - 44 en el array si sacaba 45 no encontraba la pregunta en el array
-
-    if (!ValidateNumber && newNumber <= 44) {
-      setRaffle(prev => [...prev, Questions[newNumber]]);
-    } else {
-      randomQuestions();
-    }
-  };
-
+  
 
 
   useEffect(() => {
-    if (raffle.length < 12) {
+    if (Questions.length < 12) {
       randomQuestions();
     }
-  }, [Questions, raffle])
+  }, [FetchQuestions, Questions])
 
 
 
@@ -39,8 +25,8 @@ function App() {
     <>
 
 
-      {raffle.length > 0 ?
-        <ShowQuestions Questions={raffle} /> :
+      {Questions.length > 0 ?
+        <ShowQuestions Questions={Questions} /> :
         <button onClick={() => {
           RequestQuestions()
           randomQuestions()

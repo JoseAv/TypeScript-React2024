@@ -21,10 +21,60 @@ export const ShowQuestions = ({ Questions }: typesQuestions) => {
 
 
     function handleValues(e: ChangeEvent<HTMLInputElement>) {
+        handlePoint()
         const { name, value } = e.target
         const cleanedValue = value.replace(/^0+(?=\d)/, '')
         const IntNumber = Number.isInteger(+value)
+
         if (!IntNumber) return
+        if (+value > totalPoints) return
+        const ValueCount = handlePoint()
+
+
+
+        if (ValueCount <= 0) {
+            const { Value1, Value2, Value3, Value4 } = Value
+
+            if (+value < +Value1 && name === 'Value1') {
+                console.log('entra aqui')
+                setValue(prev => ({
+                    ...prev,
+                    [name]: cleanedValue
+                }))
+
+            }
+
+            if (+value < +Value2 && name === 'Value2') {
+                console.log('entra aqui')
+                setValue(prev => ({
+                    ...prev,
+                    [name]: cleanedValue
+                }))
+
+            }
+
+            if (+value < +Value3 && name === 'Value3') {
+                setValue(prev => ({
+                    ...prev,
+                    [name]: cleanedValue
+                }))
+
+            }
+
+            if (+value < +Value4 && name === 'Value4') {
+                console.log('entra aqui')
+                setValue(prev => ({
+                    ...prev,
+                    [name]: cleanedValue
+                }))
+
+            }
+
+
+            return
+
+        }
+
         setValue(prev => ({
             ...prev,
             [name]: cleanedValue
@@ -60,6 +110,7 @@ export const ShowQuestions = ({ Questions }: typesQuestions) => {
 
     function confirm() {
 
+
         setValue({
             Value1: '0',
             Value2: '0',
@@ -75,45 +126,64 @@ export const ShowQuestions = ({ Questions }: typesQuestions) => {
     }
 
 
-    useEffect(() => {
+    const handlePoint = () => {
         let CountPoints = totalPoints
-        CountPoints = CountPoints - +Value.Value1 - +Value.Value2 - +Value.Value3 - +Value.Value4
-        setpoin(CountPoints)
+        const { Value1, Value2, Value3, Value4 } = Value
+        CountPoints = CountPoints - +Value1 - +Value2 - +Value3 - +Value4
+        if (CountPoints >= 0) {
+            setpoin(CountPoints)
+        }
+        return CountPoints
+    }
 
-    }, [Value, point])
+    useEffect(() => {
+        handlePoint()
+
+    }, [Value, point, totalPoints])
 
     return (
+
         <>
-            <h1>Puntos Ahora {showResult ? totalPoints : point}</h1>
-            <div className=' flex gap-2 '>
-                <div>
-                    <p className=' text-3xl'>{question.id}.</p>
-                    <p className=' text-xl'>{question.pregunta}</p>
-                </div>
-                <form onSubmit={handlendSubmit}>
-                    <div className=' flex flex-col gap-3 justify-center items-center'>
-                        <input name='Value1' type="number" required min={0} onChange={handleValues} disabled={showResult} value={Value.Value1} />
-                        <input name='Value2' type="number" required min={0} onChange={handleValues} disabled={showResult} value={Value.Value2} />
-                        <input name='Value3' type="number" required min={0} onChange={handleValues} disabled={showResult} value={Value.Value3} />
-                        <input name='Value4' type="number" required min={0} onChange={handleValues} disabled={showResult} value={Value.Value4} />
-                        {!showResult ? <button type="submit" >Responder</button> : ''}
+            {totalPoints <= 0 ? <p className=' bg-red-400 text-white font-bold'>Juego Finalizado</p> :
+                <>
+                    <h1>Puntos Ahora {showResult ? totalPoints : point}</h1>
+                    <div className=' flex gap-2 '>
+                        <div>
+                            <p className=' text-3xl'>{question.id}.</p>
+                            <p className=' text-xl'>{question.pregunta}</p>
+                        </div>
+                        <form onSubmit={handlendSubmit}>
+                            <div className=' flex flex-col gap-3 justify-center items-center'>
+                                <input name='Value1' type="number" required min={0} onChange={handleValues} disabled={showResult} value={Value.Value1} />
+                                <input name='Value2' type="number" required min={0} onChange={handleValues} disabled={showResult} value={Value.Value2} />
+                                <input name='Value3' type="number" required min={0} onChange={handleValues} disabled={showResult} value={Value.Value3} />
+                                <input name='Value4' type="number" required min={0} onChange={handleValues} disabled={showResult} value={Value.Value4} />
+                                {!showResult ? <button type="submit" >Responder</button> : ''}
 
+                            </div>
+                        </form>
+
+
+                        <div>
+
+                        </div>
                     </div>
-                </form>
+                    <div>
+
+                        {showResult ? <button onClick={() => confirm()}>Siguiente</button> : ''}
+                        {alert ? <p className=' bg-red-400 text-white font-bold'>Debe de Gastar Todos sus puntos</p> : ''}
+                    </div>
 
 
-                <div>
 
-                </div>
-            </div>
-            <div>
-                {showResult ? totalPoints > 0 ? <button onClick={() => confirm()}>Siguiente</button> : <p className=' bg-red-400 text-white font-bold'>Juego Finalizado</p> : ''}
-                {alert ? <p className=' bg-red-400 text-white font-bold'>Debe de Gastar Todos sus puntos</p> : ''}
-            </div>
+                </>
 
+            }
 
 
         </>
+
+
 
 
     )
