@@ -24,6 +24,9 @@ export interface typeUseQuetions {
     showResult: boolean
     handlendSubmit: (e: FormEvent<HTMLFormElement>, count: number) => void
     setShowResult: () => void
+    Correct: number
+    setCorrect: () => void
+    resetGame: () => void
 }
 
 export interface Values {

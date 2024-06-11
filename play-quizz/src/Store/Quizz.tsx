@@ -16,6 +16,7 @@ export const useQuestions = create<typeUseQuetions>((set, get) => {
         totalPoints: 1000,
         point: 1000,
         showResult: false,
+        Correct: 5,
 
 
         async RequestQuestions() {
@@ -106,7 +107,8 @@ export const useQuestions = create<typeUseQuetions>((set, get) => {
             if (point > 0) return set({ alert: true })
 
             const FindCorrect = Questions[count].correcta
-            console.log(FindCorrect)
+            set({ Correct: FindCorrect })
+
             if (FindCorrect === 0) {
                 set({ totalPoints: +Value.Value1 })
             }
@@ -139,6 +141,21 @@ export const useQuestions = create<typeUseQuetions>((set, get) => {
         },
         setShowResult() {
             set({ showResult: false })
+        },
+        setCorrect() {
+            set({ Correct: 5 })
+        },
+        resetGame() {
+            set({
+                FetchQuestions: [],
+                Questions: [],
+                Value: { Value1: '0', Value2: '0', Value3: '0', Value4: '0', },
+                alert: false,
+                totalPoints: 1000,
+                point: 1000,
+                showResult: false,
+                Correct: 5,
+            })
         }
 
 
