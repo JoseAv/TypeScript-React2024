@@ -1,17 +1,35 @@
+import { ChangeEvent, FormEvent } from "react"
+
 export interface TypeQuestions {
     id: number,
     pregunta: string,
     respuestas: string[],
     contestacion: string[],
     correcta: number,
-    eleccion: answer | 0
+    eleccion: number
 }
 
-export const answers = {
-    respuesta1: 1,
-    respuesta2: 2,
-    respuesta3: 3,
-    respuesta4: 4,
-} as const
+export interface typeUseQuetions {
+    FetchQuestions: TypeQuestions[] | [],
+    RequestQuestions: () => void,
+    Questions: TypeQuestions[] | [],
+    randomQuestions: () => void,
+    Value: Values,
+    ResetValues: () => void,
+    handleValues: (e: ChangeEvent<HTMLInputElement>) => void
+    handlePoint: () => number
+    alert: boolean
+    totalPoints: number
+    point: number
+    showResult: boolean
+    handlendSubmit: (e: FormEvent<HTMLFormElement>, count: number) => void
+    setShowResult: () => void
+}
 
-export type answer = typeof answers[keyof typeof answers]
+export interface Values {
+    Value1: string
+    Value2: string
+    Value3: string
+    Value4: string
+}
+

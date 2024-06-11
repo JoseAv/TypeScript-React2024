@@ -1,5 +1,6 @@
-import { ChangeEvent, FormEvent, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { type TypeQuestions } from '../types/TypesQuestions'
+import { useQuestions } from '../Store/Quizz'
 
 interface typesQuestions {
     Questions: TypeQuestions[]
@@ -8,137 +9,31 @@ interface typesQuestions {
 export const ShowQuestions = ({ Questions }: typesQuestions) => {
     const [question, setQuestion] = useState<TypeQuestions>(Questions[0])
     const [count, setCount] = useState(0)
-    const [totalPoints, setTotal] = useState(1000)
-    const [point, setpoin] = useState(totalPoints)
-    const [Value, setValue] = useState({
-        Value1: '0',
-        Value2: '0',
-        Value3: '0',
-        Value4: '0',
-    })
-    const [showResult, setShowResult] = useState(false)
-    const [alert, setAlert] = useState(false)
 
-
-    function handleValues(e: ChangeEvent<HTMLInputElement>) {
-        handlePoint()
-        const { name, value } = e.target
-        const cleanedValue = value.replace(/^0+(?=\d)/, '')
-        const IntNumber = Number.isInteger(+value)
-
-        if (!IntNumber) return
-        if (+value > totalPoints) return
-        const ValueCount = handlePoint()
-
-
-
-        if (ValueCount <= 0) {
-            const { Value1, Value2, Value3, Value4 } = Value
-
-            if (+value < +Value1 && name === 'Value1') {
-                console.log('entra aqui')
-                setValue(prev => ({
-                    ...prev,
-                    [name]: cleanedValue
-                }))
-
-            }
-
-            if (+value < +Value2 && name === 'Value2') {
-                console.log('entra aqui')
-                setValue(prev => ({
-                    ...prev,
-                    [name]: cleanedValue
-                }))
-
-            }
-
-            if (+value < +Value3 && name === 'Value3') {
-                setValue(prev => ({
-                    ...prev,
-                    [name]: cleanedValue
-                }))
-
-            }
-
-            if (+value < +Value4 && name === 'Value4') {
-                console.log('entra aqui')
-                setValue(prev => ({
-                    ...prev,
-                    [name]: cleanedValue
-                }))
-
-            }
-
-
-            return
-
-        }
-
-        setValue(prev => ({
-            ...prev,
-            [name]: cleanedValue
-        }))
-    }
-
-    function handlendSubmit(e: FormEvent<HTMLFormElement>) {
-        e.preventDefault()
-
-        if (point > 0) return setAlert(true)
-
-        const FindCorrect = Questions[count].correcta
-        if (FindCorrect === 1) {
-            setTotal(+Value.Value1)
-        }
-        if (FindCorrect === 2) {
-            setTotal(+Value.Value2)
-        }
-        if (FindCorrect === 3) {
-            setTotal(+Value.Value3)
-        }
-        if (FindCorrect === 4) {
-            setTotal(+Value.Value4)
-        }
-
-        setAlert(false)
-        setShowResult(true)
-
-
-    }
-
+    const Value = useQuestions((state) => state.Value)
+    const ResetValues = useQuestions((state) => state.ResetValues)
+    const handleValues = useQuestions((state) => state.handleValues)
+    const handlePoint = useQuestions((state) => state.handlePoint)
+    const point = useQuestions((state) => state.point)
+    const showResult = useQuestions((state) => state.showResult)
+    const setShowResult = useQuestions((state) => state.setShowResult)
+    const totalPoints = useQuestions((state) => state.totalPoints)
+    const handlendSubmit = useQuestions((state) => state.handlendSubmit)
+    const alert = useQuestions((state) => state.alert)
 
 
     function confirm() {
-
-
-        setValue({
-            Value1: '0',
-            Value2: '0',
-            Value3: '0',
-            Value4: '0',
-        })
-
+        ResetValues()
         if (count >= 11) return
 
         setQuestion(Questions[count])
         setCount(count + 1)
-        setShowResult(false)
+        setShowResult()
     }
 
-
-    const handlePoint = () => {
-        let CountPoints = totalPoints
-        const { Value1, Value2, Value3, Value4 } = Value
-        CountPoints = CountPoints - +Value1 - +Value2 - +Value3 - +Value4
-        if (CountPoints >= 0) {
-            setpoin(CountPoints)
-        }
-        return CountPoints
-    }
 
     useEffect(() => {
         handlePoint()
-
     }, [Value, point, totalPoints])
 
     return (
@@ -146,32 +41,42 @@ export const ShowQuestions = ({ Questions }: typesQuestions) => {
         <>
             {totalPoints <= 0 ? <p className=' bg-red-400 text-white font-bold'>Juego Finalizado</p> :
                 <>
-                    <h1>Puntos Ahora {showResult ? totalPoints : point}</h1>
-                    <div className=' flex gap-2 '>
-                        <div>
-                            <p className=' text-3xl'>{question.id}.</p>
-                            <p className=' text-xl'>{question.pregunta}</p>
+                    <h1 className='text-[60px] font-bold text-slate-200'>Puntos Ahora: <span className=''>{showResult ? totalPoints : point}</span></h1>
+                    <div className=' flex gap-5 '>
+                        <div className='border-4 border-gray p-5 rounded-xl bg-gray-800 h-64 flex flex-col items-center w-[650px]'>
+                            <h3 className=' text-[30px] p-0 font-semibold text-slate-300'>Pregunta No. {count + 1}</h3>
+                            <p className=' text-xl mt-3 text-white font-medium text-[30px] text-balance leading-10'>{question.pregunta}</p>
                         </div>
-                        <form onSubmit={handlendSubmit}>
-                            <div className=' flex flex-col gap-3 justify-center items-center'>
-                                <input name='Value1' type="number" required min={0} onChange={handleValues} disabled={showResult} value={Value.Value1} />
-                                <input name='Value2' type="number" required min={0} onChange={handleValues} disabled={showResult} value={Value.Value2} />
-                                <input name='Value3' type="number" required min={0} onChange={handleValues} disabled={showResult} value={Value.Value3} />
-                                <input name='Value4' type="number" required min={0} onChange={handleValues} disabled={showResult} value={Value.Value4} />
-                                {!showResult ? <button type="submit" >Responder</button> : ''}
+                        <form onSubmit={(e) => handlendSubmit(e, count)} >
+
+
+                            <div className=' flex gap-4 justify-center items-center w-[550px]'>
+
+                                <div className='flex gap-2 flex-col'>
+                                    <p>{question.respuestas[0]}</p>
+                                    <p>{question.respuestas[1]}</p>
+                                    <p>{question.respuestas[2]}</p>
+                                    <p>{question.respuestas[3]}</p>
+                                </div>
+
+                                <div className='flex gap-2 flex-col'>
+                                    <input className='bg-white text-black text-center' name='Value1' type="number" required min={0} onChange={(e) => handleValues(e)} disabled={showResult} value={Value.Value1} />
+                                    <input name='Value2' type="number" required min={0} onChange={handleValues} disabled={showResult} value={Value.Value2} />
+                                    <input name='Value3' type="number" required min={0} onChange={handleValues} disabled={showResult} value={Value.Value3} />
+                                    <input name='Value4' type="number" required min={0} onChange={handleValues} disabled={showResult} value={Value.Value4} />
+                                </div>
+
 
                             </div>
+
+                            {!showResult ? <button className='bg-white text-black' type="submit" >Responder</button> : ''}
                         </form>
 
-
-                        <div>
-
-                        </div>
                     </div>
                     <div>
 
                         {showResult ? <button onClick={() => confirm()}>Siguiente</button> : ''}
-                        {alert ? <p className=' bg-red-400 text-white font-bold'>Debe de Gastar Todos sus puntos</p> : ''}
+                        {alert === true ? <p className=' bg-red-400 text-white font-bold'>Debe de Gastar Todos sus puntos</p> : ''}
                     </div>
 
 

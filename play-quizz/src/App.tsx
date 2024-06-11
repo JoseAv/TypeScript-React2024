@@ -10,7 +10,7 @@ function App() {
   const Questions = useQuestions((state) => state.Questions)
 
 
-  
+
 
 
   useEffect(() => {
@@ -25,14 +25,19 @@ function App() {
     <>
 
 
+
       {Questions.length > 0 ?
         <ShowQuestions Questions={Questions} /> :
-        <button onClick={() => {
-          RequestQuestions()
-          randomQuestions()
-        }} >
-          Empezar
-        </button>}
+        <>
+          <h2 data-text="Play Quizz" className=' font-bold mb-6'>Play Quizz</h2>
+          <button className='initButton' onClick={() => {
+            RequestQuestions()
+            randomQuestions()
+          }} >
+            Empezar :)
+          </button>
+        </>
+      }
     </>
   )
 }

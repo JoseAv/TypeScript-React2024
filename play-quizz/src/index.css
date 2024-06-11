@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -10,7 +9,7 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: #0c0c0cd5;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -18,56 +17,57 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
 body {
   margin: 0;
   display: flex;
   place-items: center;
+  justify-content: center; /* Para centrar horizontalmente */
   min-width: 320px;
   min-height: 100vh;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+/* Solo Botones  */
+.initButton{
+background-color: white;
+color:  black;
+font-size: 40px;
+font-weight: bold;
+border-radius:10px;
+width: 400px;
+height: 60px;
+}
+.initButton:hover{
+  box-shadow: 3px 3px 2px 2px rgba(207, 207, 207, 0.774);
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+
+/* -----------   */
+
+/* Para el texto con animation  */
+h2 {
+  position: relative;
+  font-size: 6rem;
+  color: #222;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+h2::before {
+  content: attr(data-text);
+  position: absolute;
+  color: #fff;
+  width: 350px;
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 4px solid #fff;
+  animation: animate 8s linear infinite;
+}
+
+@keyframes animate {
+  0%, 10%, 100% {
+    width: 0;
   }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
+  70%, 90% {
+    width: 100%;
   }
 }
+
+/* Fin  */
