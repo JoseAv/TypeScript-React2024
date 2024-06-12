@@ -59,7 +59,7 @@ export const ShowQuestions = ({ Questions }: typesQuestions) => {
                                 <h3 className=' text-[38px] p-0 font-bold text-neutral-300 '>Pregunta No. {count + 1}</h3>
                             </div>
                             <div className='w-full flex justify-center items-center mt-20 px-0.5'>
-                                <p className=' text-xl mt-3 text-neutral-100 font-normal text-[45px] text-balance leading-10'>{question.pregunta}</p>
+                                <p className='mt-3 text-neutral-100 font-normal text-[45px] text-balance leading-10'>{question.pregunta}</p>
                             </div>
                         </div>
                         <form onSubmit={(e) => handlendSubmit(e, count)} >
@@ -68,48 +68,25 @@ export const ShowQuestions = ({ Questions }: typesQuestions) => {
                             <div className=' flex gap-2  w-[550px] flex-col h-[350px] justify-between items-center'>
 
 
+                                {question.respuestas.map((res, index) => {
+                                    const name = index === 0 ? 'Value1' : index === 1 ? 'Value2' : index === 3 ? 'Value3' : 'Value4'
+                                    const value = index === 0 ? Value.Value1 : index === 1 ? Value.Value2 : index === 3 ? Value.Value3 : Value.Value4
+                                    return (
+                                        <div className='flex w-full gap-3 items-center justify-center'>
+                                            <div className='flex  w-[450px] '>
+                                                <p className={Correct === index ? correct : normal}>A. {res}</p>
+                                            </div>
+                                            <div className='flex gap-8 flex-col w-[75px] font-semibold text-[25px]'>
+                                                <input className='bg-slate-100 text-black rounded-md px-1' name={name} type="number" required min={0} onChange={handleValues} disabled={showResult} value={value} />
+                                            </div>
 
-                                <div className='flex w-full gap-3 items-center justify-center'>
-                                    <div className='flex  w-[450px] '>
-                                        <p className={Correct === 0 ? correct : normal}>A. {question.respuestas[0]}</p>
-                                    </div>
-                                    <div className='flex gap-8 flex-col w-[75px] font-semibold text-[25px]'>
-                                        <input className='bg-slate-100 text-black rounded-md px-1' name='Value1' type="number" required min={0} onChange={(e) => handleValues(e)} disabled={showResult} value={Value.Value1} />
-                                    </div>
+                                        </div>
 
-                                </div>
-
-
-                                <div className='flex w-full gap-3 items-center justify-center'>
-                                    <div className='flex items-center w-[450px] justify-center'>
-                                        <p className={Correct === 1 ? correct : normal}>B. {question.respuestas[1]}</p>
-                                    </div>
-                                    <div className='flex gap-8 flex-col w-[75px] font-semibold text-[25px]'>
-                                        <input className='bg-slate-100 text-black rounded-md px-1' name='Value2' type="number" required min={0} onChange={handleValues} disabled={showResult} value={Value.Value2} />
-                                    </div>
-
-                                </div>
-
-                                <div className='flex w-full gap-3   justify-center items-center'>
-                                    <div className='flex  w-[450px] '>
-                                        <p className={Correct === 2 ? correct : normal}>C. {question.respuestas[2]}</p>
-                                    </div>
-                                    <div className='flex gap-8 flex-col w-[75px] font-semibold text-[25px] '>
-                                        <input className='correct bg-slate-100 text-black rounded-md px-1' name='Value3' type="number" required min={0} onChange={handleValues} disabled={showResult} value={Value.Value3} />
-                                    </div>
-
-                                </div>
+                                    )
+                                })}
 
 
-                                <div className='flex w-full gap-3 items-center justify-center'>
-                                    <div className='flex items-center w-[450px] text-wrap justify-center'>
-                                        <p className={Correct === 3 ? correct : normal}>D. {question.respuestas[3]}</p>
-                                    </div>
-                                    <div className='flex gap-8 flex-col w-[75px] font-semibold text-[25px]'>
-                                        <input className='correct bg-slate-100 text-black rounded-md px-1' name='Value4' type="number" required min={0} onChange={handleValues} disabled={showResult} value={Value.Value4} />
-                                    </div>
 
-                                </div>
 
 
                                 {!showResult ? <button className='bg-zinc-800 text-white w-[250px] rounded-xl text-[20px] font-semibold h-[35px] ' type="submit" >Responder</button> : ''}
