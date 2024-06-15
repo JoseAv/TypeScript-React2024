@@ -15,7 +15,7 @@ export function User({ Users, paint, DeleteUser, handleSort }: typeUsers) {
                 <thead>
                     <tr>
                         <th>Foto</th>
-                        <th className='pointe'  onClick={() => handleSort(Filters.SortName)}>Nombre</th>
+                        <th className='pointe' onClick={() => handleSort(Filters.SortName)}>Nombre</th>
                         <th className='pointe' onClick={() => handleSort(Filters.SortLast)}>Apellido</th>
                         <th className='pointe' onClick={() => handleSort(FiltersCountry.SortCountry)}>Pais</th>
                         <th>Acciones</th>
