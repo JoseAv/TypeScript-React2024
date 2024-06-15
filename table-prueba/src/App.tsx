@@ -1,68 +1,49 @@
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import './App.css'
 import { User } from './Users'
 import { type Result, type Filter, Filters, FiltersCountry, FilterCountry } from './types/users'
+import { useInfiniteQuery } from '@tanstack/react-query'
 
-interface typeFetch {
-  CallUser: (page: number) => Promise<Result[] | void>
-}
 
-async function CallUser(page: number): ReturnType<typeFetch['CallUser']> {
+
+async function CallUser({ pageParam = 1 }: { pageParam?: number }): Promise<{ Users: Result[], nextCursor?: number }> {
   try {
-    console.log(page)
-    const res = await fetch(`https://randomuser.me/api/?page=${page}&results=10&seed=abc`)
 
-    if (!res.ok) return
+    const res = await fetch(`https://randomuser.me/api/?page=${pageParam}&results=10&seed=abc`)
+
     const resolve = await res.json()
-    const newUser: Result[] = resolve.results
-    return newUser
+    const Users: Result[] = resolve.results ?? []
+    const CurrentPage = pageParam + 1
+    const nextCursor = CurrentPage > 3 ? undefined : CurrentPage
+
+    return {
+      Users,
+      nextCursor
+    }
 
 
   } catch (er) {
-    console.log(er)
+    return { Users: [], nextCursor: -1 }
   }
 }
 
 
 function App() {
-  const [Users, setUser] = useState<Result[] | []>([])
   const [paint, setpaint] = useState(false)
-  const [err, setErr] = useState('')
   const [sort, setSort] = useState<Filter>(Filters.SortNone)
   const [sortCountry, setSortCountry] = useState<FilterCountry>(FiltersCountry.SortNone)
   const [text, setText] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [page, setpage] = useState<number>(1)
+
+  const { isLoading, isError, data, fetchNextPage, hasNextPage, refetch } = useInfiniteQuery({ // no tipar el useInfiniteQuery
+    queryKey: ['users'],
+    queryFn: CallUser,
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => lastPage.nextCursor || undefined,
+  })
 
 
+  const Users = data?.pages.flatMap(page => page.Users) ?? [] // Revisar page que es donde estara el arreglo de Users
 
-
-  const refUser = useRef<Result[] | []>([])
-  useEffect(() => {
-    setLoading(true)
-
-    CallUser(page).then(resolve => {
-      if (!resolve) return
-      if (resolve.length <= 0) return
-
-      if (Users.length <= 0) {
-        refUser.current = resolve
-        setUser(resolve)
-        return
-      }
-
-      setUser(prevUsers => {
-        if (prevUsers.length <= 0) return resolve
-        const Newuser = [...prevUsers, ...resolve]
-        refUser.current = Newuser
-        return Newuser
-      })
-    })
-      .catch(err => setErr(err))
-      .finally(() =>
-        setLoading(false)
-      )
-  }, [page, User])
 
   function handleSort(fill: Filter | FilterCountry) {
 
@@ -82,28 +63,31 @@ function App() {
 
   }
 
+
+
   const SorterText = text ?
     Users.filter(user => user.location.country.toLocaleLowerCase().includes(text.toLocaleLowerCase())) :
-    Users
+    Users ?? []
 
 
-  const SorterdCountry = sortCountry === FiltersCountry.SortCountry ?
+  const SorterdCountry = sortCountry === FiltersCountry.SortCountry && SorterText?.length ?
     [...SorterText].sort((a, b) => a.location.country.localeCompare(b.location.country)) :
     SorterText
 
-  const SorterdUser = sort === Filters.SortName ?
+  const SorterdUser = sort === Filters.SortName && SorterdCountry?.length ?
     [...SorterdCountry].sort((a, b) => a.name.first.localeCompare(b.name.first)) :
-    sort === Filters.SortLast ?
+    sort === Filters.SortLast && SorterdCountry?.length ?
       [...SorterdCountry].sort((a, b) => a.name.last.localeCompare(b.name.last)) :
       SorterdCountry
 
   const DeleteUser = (id: string) => {
-    const newUsers = Users.filter(user => user.login.uuid !== id)
-    setUser(newUsers)
+    Users.filter(user => user.login.uuid !== id)
+    console.log(Users)
+
   }
 
   function Reset() {
-    setUser(refUser.current)
+    refetch
   }
 
 
@@ -120,14 +104,14 @@ function App() {
       </div>
 
 
-      <User Users={SorterdUser} paint={paint} DeleteUser={DeleteUser} handleSort={handleSort} />
+      <User Users={SorterdUser ?? []} paint={paint} DeleteUser={DeleteUser} handleSort={handleSort} />
 
-      {loading && <h1>Cargando</h1>}
-      {page === 3 ? <p>No hay mas resultados</p> : <button onClick={() => {
-        setpage(page + 1)
+      {isLoading && <h1>Cargando</h1>}
+      {!hasNextPage ? <p>No hay mas resultados</p> : <button onClick={() => {
+        fetchNextPage()
       }}>Agregar Mas</button>}
-      {err && !loading && <h1>Hubo Un error</h1>}
-      {Users.length < 1 && !err && !loading && <h1>No hay Usuario</h1>}
+      {isError && !isLoading && <h1>Hubo Un error</h1>}
+      {Users.length < 1 && !isError && !isLoading && <h1>No hay Usuario</h1>}
 
     </>
   )
